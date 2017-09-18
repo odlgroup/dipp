@@ -49,8 +49,8 @@ corrupt2 = autograd.Variable(torch.Tensor(corrupt2_arr))
 # Compute local similarity images
 a = 4.2
 c = 100
-lsim_ax0 = pytorch.modules.haarpsi.SimilarityMap(axis=0, a=a, c=c)
-lsim_ax1 = pytorch.modules.haarpsi.SimilarityMap(axis=1, a=a, c=c)
+lsim_ax0 = pytorch.modules.haarpsi.HaarPSISimilarityMap(axis=0, a=a, c=c)
+lsim_ax1 = pytorch.modules.haarpsi.HaarPSISimilarityMap(axis=1, a=a, c=c)
 
 sim1_ax0 = lsim_ax0(corrupt1, true_image)
 sim1_ax1 = lsim_ax1(corrupt1, true_image)
@@ -77,8 +77,8 @@ fig.tight_layout()
 fig.show()
 
 # Compute similarity weight maps
-wmap_ax0 = pytorch.modules.haarpsi.SimilarityWeightMap(axis=0)
-wmap_ax1 = pytorch.modules.haarpsi.SimilarityWeightMap(axis=1)
+wmap_ax0 = pytorch.modules.haarpsi.HaarPSIWeightMap(axis=0)
+wmap_ax1 = pytorch.modules.haarpsi.HaarPSIWeightMap(axis=1)
 
 weight1_ax0 = wmap_ax0(corrupt1, true_image)
 weight1_ax1 = wmap_ax1(corrupt1, true_image)

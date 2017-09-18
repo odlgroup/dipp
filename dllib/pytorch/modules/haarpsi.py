@@ -16,7 +16,7 @@ from dllib.pytorch.modules.generic import Logistic, InvLogistic
 __all__ = ('HaarPSI',)
 
 
-class SimilarityScore(nn.Module):
+class HaarPSIScore(nn.Module):
 
     """Pointwise :math:`(2xy + c^2) / (x^2 + y^2 + c^2)`.
 
@@ -49,7 +49,7 @@ class SimilarityScore(nn.Module):
          0.5000
         [torch.FloatTensor of size 3]
         """
-        super(SimilarityScore, self).__init__()
+        super(HaarPSIScore, self).__init__()
         if c is None:
             if init_c is None:
                 raise ValueError('`init_c` must be provided for `c=None`')
@@ -62,7 +62,7 @@ class SimilarityScore(nn.Module):
         return (2 * x * y + self.c ** 2) / (x ** 2 + y ** 2 + self.c ** 2)
 
 
-class SimilarityMap(nn.Module):
+class HaarPSISimilarityMap(nn.Module):
 
     """Pointwise similarity score for the HaarPSI FOM.
 
@@ -113,11 +113,11 @@ class SimilarityMap(nn.Module):
             If ``c`` is ``None`` and thus learnable, this value must be
             provided as an initial value. Otherwise it is not used.
         """
-        super(SimilarityMap, self).__init__()
+        super(HaarPSISimilarityMap, self).__init__()
         assert axis in (0, 1)
         self.axis = int(axis)
         self.logistic = Logistic(a)
-        self.sim_score = SimilarityScore(c, init_c)
+        self.sim_score = HaarPSIScore(c, init_c)
 
     def forward(self, x, y):
         # Stack input to do them as a batch, add empty in_channels dim
@@ -172,7 +172,7 @@ class SimilarityMap(nn.Module):
         return self.logistic((score_l1 + score_l2) / 2)
 
 
-class SimilarityWeightMap(nn.Module):
+class HaarPSIWeightMap(nn.Module):
 
     """Pointwise weight map for computation of the HaarPSI FOM.
 
@@ -208,7 +208,7 @@ class SimilarityWeightMap(nn.Module):
             The axis :math:`k` along which high-pass filters should be
             applied.
         """
-        super(SimilarityWeightMap, self).__init__()
+        super(HaarPSIWeightMap, self).__init__()
         assert axis in (0, 1)
         self.axis = int(axis)
 
@@ -318,10 +318,10 @@ class HaarPSI(nn.Module):
         super(HaarPSI, self).__init__()
         # TODO: share parameters a and c
         self.inv_logistic = InvLogistic(a)
-        self.local_sim_ax0 = SimilarityMap(0, a, c, init_c)
-        self.local_sim_ax1 = SimilarityMap(1, a, c, init_c)
-        self.wmap_ax0 = SimilarityWeightMap(0)
-        self.wmap_ax1 = SimilarityWeightMap(1)
+        self.local_sim_ax0 = HaarPSISimilarityMap(0, a, c, init_c)
+        self.local_sim_ax1 = HaarPSISimilarityMap(1, a, c, init_c)
+        self.wmap_ax0 = HaarPSIWeightMap(0)
+        self.wmap_ax1 = HaarPSIWeightMap(1)
 
     def forward(self, x, y):
         wmap_ax0 = self.wmap_ax0(x, y)
