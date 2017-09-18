@@ -17,4 +17,4 @@ The `-e` option can be added for development installations (was `python setup.py
 
 ## Code examples
 
-The [examples](examples) folder contains examples for how to use the package. See [the `examples` README](examples/README.md).
+The [examples](examples) folder contains examples for how to use the package.
