@@ -33,3 +33,6 @@ __all__ = ()
 
 from .generic import *
 __all__ += generic.__all__
+
+from .haarpsi import *
+__all__ += haarpsi.__all__
