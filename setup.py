@@ -24,9 +24,6 @@ import sys
 root_path = os.path.dirname(__file__)
 
 
-test_deps = open(os.path.join(root_path, 'test_requirements.txt')).readlines()
-
-
 class PyTest(TestCommand):
     user_options = [('pytest-args=', 'a', "Arguments to pass to pytest")]
 
@@ -70,9 +67,11 @@ with open(os.path.join(root_path, 'dipp', '__init__.py')) as f:
             version = line.strip().split()[-1][1:-1]
             break
 
-description = ('**D**eep **I**nverse **P**roblems **P**ackage - '
+description = ('Deep Inverse Problems Package - '
                'a library of add-ons to various Deep Learning frameworks for '
                'solving Inverse Problems')
+
+long_description = 'TODO'
 
 setup(
     name='dipp',
@@ -80,6 +79,7 @@ setup(
     version=version,
 
     description=description,
+    long_description=long_description,
 
     url='https://github.com/odlgroup/dipp',
 
@@ -98,7 +98,6 @@ setup(
     install_requires=[],
     tests_require=['pytest'],
     extras_require={
-        'testing': test_deps,
         'pytorch': ['pytorch'],
         'tensorflow': ['tensorflow'],
         'theano': ['theano']
