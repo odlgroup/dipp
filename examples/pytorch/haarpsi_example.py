@@ -14,7 +14,7 @@ import numpy as np
 import scipy.misc
 import torch
 from torch import autograd
-from dllib import pytorch
+from dipp import pytorch
 
 
 true_image_arr = scipy.misc.ascent().astype('float32')

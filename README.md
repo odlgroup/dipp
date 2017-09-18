@@ -1,17 +1,16 @@
-# deep-learning-library
+# dipp
 
-Library of custom add-ons for Deep Learning frameworks.
-
+**D**eep **I**nverse **P**roblems **P**ackage - a library of add-ons to various Deep Learning frameworks for solving Inverse Problems.
 
 ## Installation
 
 Clone the repository:
 
-    git clone https://github.com/odlgroup/deep-learning-library.git
+    git clone https://github.com/odlgroup/dipp.git
 
 Install using `pip`:
 
-    cd deep-learning-library
+    cd dipp
     pip install [-e] .
 
 The `-e` option can be added for development installations (was `python setup.py develop` before).

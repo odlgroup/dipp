@@ -6,7 +6,7 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, You can
 # obtain one at https://mozilla.org/MPL/2.0/.
 
-"""Setup script for ``deep-learning-library``.
+"""Setup script for ``dipp``.
 
 Installation command::
 
@@ -48,7 +48,7 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 
-test_path = os.path.join(root_path, 'dllib', 'test')
+test_path = os.path.join(root_path, 'dipp', 'test')
 
 
 def find_tests():
@@ -66,20 +66,24 @@ def find_tests():
 
 
 # Determine version from top-level package __init__.py file
-with open(os.path.join(root_path, 'dllib', '__init__.py')) as f:
+with open(os.path.join(root_path, 'dipp', '__init__.py')) as f:
     for line in f:
         if line.startswith('__version__'):
             version = line.strip().split()[-1][1:-1]
             break
 
+description = ('**D**eep **I**nverse **P**roblems **P**ackage - '
+               'a library of add-ons to various Deep Learning frameworks for '
+               'solving Inverse Problems')
+
 setup(
-    name='deep-learning-library',
+    name='dipp',
 
     version=version,
 
-    description='Library of custom add-ons for Deep Learning frameworks',
+    description=description,
 
-    url='https://github.com/odlgroup/deep-learning-library',
+    url='https://github.com/odlgroup/dipp',
 
     author='Jonas Adler, Holger Kohr',
     author_email='odl@math.kth.se',
@@ -91,7 +95,7 @@ setup(
     keywords='research development mathematics prototyping deep-learning',
 
     packages=find_packages(),
-    package_dir={'dllib': 'dllib'},
+    package_dir={'dipp': 'dipp'},
 
     install_requires=[requires],
     tests_require=['pytest'],

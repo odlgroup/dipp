@@ -11,7 +11,7 @@
 import numpy as np
 import torch
 from torch import nn, autograd
-from dllib.pytorch.modules.generic import Logistic, InvLogistic
+from dipp.pytorch.modules.generic import Logistic, InvLogistic
 
 __all__ = ('HaarPSI',)
 
@@ -336,5 +336,5 @@ class HaarPSI(nn.Module):
 
 
 if __name__ == '__main__':
-    from dllib.util.testutils import run_doctests
+    from dipp.util.testutils import run_doctests
     run_doctests()

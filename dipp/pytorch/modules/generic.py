@@ -88,7 +88,7 @@ class InvLogistic(nn.Module):
 
 
 if __name__ == '__main__':
-    from dllib.util.testutils import run_doctests
+    from dipp.util.testutils import run_doctests
     from torch import autograd
     import numpy as np
     extraglobs = {'np': np, 'autograd': autograd}
