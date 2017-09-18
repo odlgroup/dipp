@@ -1,6 +1,6 @@
-# Copyright 2014-2017 The ODL contributors
+# Copyright 2014-2017 The DIPP contributors
 #
-# This file is part of ODL.
+# This file is part of DIPP.
 #
 # This Source Code Form is subject to the terms of the Mozilla Public License,
 # v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -37,7 +37,7 @@ except ImportError:
 
 
 @fixture(autouse=True)
-def add_doctest_np_odl(doctest_namespace):
+def add_doctest_modules(doctest_namespace):
     doctest_namespace['np'] = np
     if PYTORCH_AVAILABLE:
         doctest_namespace['pytorch'] = dipp.pytorch
