@@ -24,9 +24,7 @@ import sys
 root_path = os.path.dirname(__file__)
 
 
-requires = open(os.path.join(root_path, 'requirements.txt')).readlines()
-test_requires = open(
-    os.path.join(root_path, 'test_requirements.txt')).readlines()
+test_deps = open(os.path.join(root_path, 'test_requirements.txt')).readlines()
 
 
 class PyTest(TestCommand):
@@ -97,10 +95,13 @@ setup(
     packages=find_packages(),
     package_dir={'dipp': 'dipp'},
 
-    install_requires=[requires],
+    install_requires=[],
     tests_require=['pytest'],
     extras_require={
-        'testing': test_requires,
+        'testing': test_deps,
+        'pytorch': ['pytorch'],
+        'tensorflow': ['tensorflow'],
+        'theano': ['theano']
     },
 
     cmdclass={'test': PyTest},
