@@ -11,7 +11,7 @@
 import numpy as np
 import torch
 from torch import nn, autograd
-from dipp.pytorch.modules.generic import Logistic, InvLogistic
+from dipp.pytorch.modules.generic import InvSigmoid
 
 __all__ = ('HaarPSI',)
 
@@ -30,16 +30,19 @@ class HaarPSIScore(nn.Module):
 
         Parameters
         ----------
-        c : positive float, optional
+        c : positive float or `torch.nn.parameter.Parameter`, optional
             The :math:`c` parameter in the function. If not provided, it
-            is registered as a learnable `torch.nn.parameter.Parameter`.
+            is registered as a learnable parameter. A provided
+            ``Parameter`` is registered as-is.
         c_init : positive float, optional
             If ``c`` is ``None`` and thus learnable, this value must be
-            provided as an initial value. Otherwise it is not used.
+            provided as an initial value. Unused otherwise.
 
         Examples
         --------
-        >>> sim = SimilarityScore(2)
+        Initialize with fixed ``c``:
+
+        >>> sim = HaarPSIScore(2)
         >>> x = autograd.Variable(torch.Tensor([0, 1, 2]))
         >>> y = autograd.Variable(torch.Tensor([0, 0, 0]))
         >>> sim(x, y)  # should be [1, 4/5, 1/2]
@@ -48,12 +51,25 @@ class HaarPSIScore(nn.Module):
          0.8000
          0.5000
         [torch.FloatTensor of size 3]
+
+        Make ``c`` learnable:
+
+        >>> sim = HaarPSIScore(init_c=2)
+        >>> params = list(sim.parameters())
+        >>> len(params)
+        1
+        >>> params[0]
+        Parameter containing:
+         2
+        [torch.FloatTensor of size 1]
         """
         super(HaarPSIScore, self).__init__()
         if c is None:
             if init_c is None:
                 raise ValueError('`init_c` must be provided for `c=None`')
             self.c = nn.Parameter(torch.Tensor([init_c]))
+        elif isinstance(c, nn.Parameter):
+            self.c = c
         else:
             assert c > 0
             self.c = float(c)
@@ -102,10 +118,11 @@ class HaarPSISimilarityMap(nn.Module):
         axis : {0, 1}
             The axis :math:`k` along which high-pass filters should be
             applied.
-        a : positive float, optional
+        a : positive float or `torch.nn.parameter.Parameter`, optional
             The :math:`a` parameter in the function. If not provided, it
-            is registered as a learnable `torch.nn.parameter.Parameter`.
-            It is initialized randomly between 0.5 and 5.
+            is registered as a learnable parameter and initialized randomly
+            between 0.5 and 5. A provided ``Parameter`` is stored
+            as-is.
         c : positive float, optional
             The :math:`c` parameter in the function. If not provided, it
             is registered as a learnable `torch.nn.parameter.Parameter`.
@@ -116,8 +133,16 @@ class HaarPSISimilarityMap(nn.Module):
         super(HaarPSISimilarityMap, self).__init__()
         assert axis in (0, 1)
         self.axis = int(axis)
-        self.logistic = Logistic(a)
         self.sim_score = HaarPSIScore(c, init_c)
+
+        if a is None:
+            self.a = nn.Parameter(torch.Tensor(1))
+            self.a.data.uniform_(0.5, 5)
+        elif isinstance(a, nn.Parameter):
+            self.a = a
+        else:
+            assert a > 0
+            self.a = float(a)
 
     def forward(self, x, y):
         # Stack input to do them as a batch, add empty in_channels dim
@@ -169,7 +194,7 @@ class HaarPSISimilarityMap(nn.Module):
         score_l2 = self.sim_score(torch.abs(conv_x_l2), torch.abs(conv_y_l2))
 
         # Return logistic function applied to the mean
-        return self.logistic((score_l1 + score_l2) / 2)
+        return nn.functional.sigmoid(self.a * (score_l1 + score_l2) / 2)
 
 
 class HaarPSIWeightMap(nn.Module):
@@ -304,22 +329,44 @@ class HaarPSI(nn.Module):
 
         Parameters
         ----------
-        a : positive float, optional
+        a : positive float or `torch.nn.parameter.Parameter`, optional
             The :math:`a` parameter in the function. If not provided, it
-            is registered as a learnable `torch.nn.parameter.Parameter`.
-            It is initialized randomly between 0.5 and 5.
-        c : positive float, optional
+            is registered as a learnable parameter and initialized randomly
+            between 0.5 and 5. A provided ``Parameter`` is stored
+            as-is.
+        c : positive float or `torch.nn.parameter.Parameter`, optional
             The :math:`c` parameter in the function. If not provided, it
-            is registered as a learnable `torch.nn.parameter.Parameter`.
+            is registered as a learnable parameter. A provided
+            ``Parameter`` is registered as-is.
         c_init : positive float, optional
             If ``c`` is ``None`` and thus learnable, this value must be
             provided as an initial value. Otherwise it is not used.
         """
         super(HaarPSI, self).__init__()
-        # TODO: share parameters a and c
-        self.inv_logistic = InvLogistic(a)
-        self.local_sim_ax0 = HaarPSISimilarityMap(0, a, c, init_c)
-        self.local_sim_ax1 = HaarPSISimilarityMap(1, a, c, init_c)
+
+        if a is None:
+            self.a = nn.Parameter(torch.Tensor(1))
+            self.a.data.uniform_(0.5, 5)
+        elif isinstance(a, nn.Parameter):
+            self.a = a
+        else:
+            assert a > 0
+            self.a = float(a)
+
+        if c is None:
+            if init_c is None:
+                raise ValueError('`init_c` must be provided for `c=None`')
+            self.c = nn.Parameter(torch.Tensor([init_c]))
+        elif isinstance(c, nn.Parameter):
+            self.c = c
+        else:
+            assert c > 0
+            self.c = float(c)
+
+        # Sharing the `a` and `c` parameters with the constituting modules
+        self.inv_sigmoid = InvSigmoid()
+        self.local_sim_ax0 = HaarPSISimilarityMap(0, self.a, self.c)
+        self.local_sim_ax1 = HaarPSISimilarityMap(1, self.a, self.c)
         self.wmap_ax0 = HaarPSIWeightMap(0)
         self.wmap_ax1 = HaarPSIWeightMap(1)
 
@@ -332,7 +379,7 @@ class HaarPSI(nn.Module):
             self.local_sim_ax1(x, y) * wmap_ax1)
         denom = torch.sum(wmap_ax0 + wmap_ax1)
 
-        return self.inv_logistic(numer / denom) ** 2
+        return (self.inv_sigmoid(numer / denom) / self.a) ** 2
 
 
 if __name__ == '__main__':
