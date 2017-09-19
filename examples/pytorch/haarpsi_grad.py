@@ -19,17 +19,19 @@ image1 = autograd.Variable(torch.Tensor(image1_arr))
 image2 = autograd.Variable(torch.Tensor(image2_arr))
 
 # HaarPSI with fixed parameters
-a = 4.2
-c = 3.0
-haarpsi = pytorch.HaarPSI(a, c)
-print('Learnable parameters: ', len(list(haarpsi.parameters())))
+print('-----')
+print('HaarPSI with fixed parameters')
+haarpsi = pytorch.HaarPSI(a=4.2, c=3.0)
+print('Number of learnable parameters: ', len(list(haarpsi.parameters())))
 score = haarpsi(image1, image2)
 print('Score: ', score.data[0])
 
 # HaarPSI with learnable parameters (`c` needs to be explicitly initialized)
+print('-----')
+print('HaarPSI with learnable parameters')
 haarpsi = pytorch.HaarPSI(init_c=3.0)
 params = list(haarpsi.parameters())
-print('Learnable parameters: ', len(params))
+print('Number of learnable parameters: ', len(params))
 print('a =', params[0])  # random
 print('c =', params[1])
 score = haarpsi(image1, image2)
