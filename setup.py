@@ -1,6 +1,6 @@
-# Copyright 2014-2017 The ODL contributors
+# Copyright 2014-2017 The DIPP contributors
 #
-# This file is part of ODL.
+# This file is part of DIPP.
 #
 # This Source Code Form is subject to the terms of the Mozilla Public License,
 # v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -22,11 +22,6 @@ import sys
 
 
 root_path = os.path.dirname(__file__)
-
-
-requires = open(os.path.join(root_path, 'requirements.txt')).readlines()
-test_requires = open(
-    os.path.join(root_path, 'test_requirements.txt')).readlines()
 
 
 class PyTest(TestCommand):
@@ -72,9 +67,11 @@ with open(os.path.join(root_path, 'dipp', '__init__.py')) as f:
             version = line.strip().split()[-1][1:-1]
             break
 
-description = ('**D**eep **I**nverse **P**roblems **P**ackage - '
+description = ('Deep Inverse Problems Package - '
                'a library of add-ons to various Deep Learning frameworks for '
                'solving Inverse Problems')
+
+long_description = 'TODO'
 
 setup(
     name='dipp',
@@ -82,6 +79,7 @@ setup(
     version=version,
 
     description=description,
+    long_description=long_description,
 
     url='https://github.com/odlgroup/dipp',
 
@@ -97,10 +95,16 @@ setup(
     packages=find_packages(),
     package_dir={'dipp': 'dipp'},
 
-    install_requires=[requires],
-    tests_require=['pytest'],
+    package_data={'dipp': find_tests() + ['dipp/pytest.ini']},
+    include_package_data=True,
+    entry_points={'pytest11': ['dipp_plugins = dipp.util.pytest_plugins']},
+
+    install_requires=[],
+    tests_require=['pytest', 'pytest-pep8'],
     extras_require={
-        'testing': test_requires,
+        'pytorch': ['pytorch'],
+        'tensorflow': ['tensorflow'],
+        'theano': ['theano']
     },
 
     cmdclass={'test': PyTest},

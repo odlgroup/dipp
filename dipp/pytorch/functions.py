@@ -1,6 +1,6 @@
-# Copyright 2014-2017 The ODL contributors
+# Copyright 2014-2017 The DIPP contributors
 #
-# This file is part of ODL.
+# This file is part of DIPP.
 #
 # This Source Code Form is subject to the terms of the Mozilla Public License,
 # v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -33,5 +33,5 @@ extending-torch-autograd>`_ for further details.
 __all__ = ()
 
 if __name__ == '__main__':
-    from odl.util.testutils import run_doctests
+    from dipp.util.testutils import run_doctests
     run_doctests()

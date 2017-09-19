@@ -1,0 +1,9 @@
+include LICENSE
+include README.md
+include requirements.txt
+include setup.cfg
+include setup.py
+include test_requirements.txt
+exclude pytest.ini
+recursive-include dipp/pytorch/test test*.py *test.py
+prune examples
