@@ -15,7 +15,7 @@ import os
 
 import dipp
 try:
-    import dipp.pytorch
+    import torch
 except ImportError:
     PYTORCH_AVAILABLE = False
 else:
@@ -38,9 +38,14 @@ except ImportError:
 
 @fixture(autouse=True)
 def add_doctest_modules(doctest_namespace):
+    """Make some modules available by default in doctests."""
     doctest_namespace['np'] = np
     if PYTORCH_AVAILABLE:
+        from torch import autograd, nn
         doctest_namespace['pytorch'] = dipp.pytorch
+        doctest_namespace['torch'] = torch
+        doctest_namespace['autograd'] = autograd
+        doctest_namespace['nn'] = nn
 
 
 # --- Ignored tests due to missing modules --- #

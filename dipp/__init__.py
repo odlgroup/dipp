@@ -10,9 +10,11 @@
 
 __version__ = '0.1.0.dev0'
 
-__all__ = ()
+__all__ = ('util',)
 
-# We keep this file empty to keep the namespaces of the subpackages separate.
-# This allows users to only install selected frameworks and still be able
-# to import the relevant subpackages without getting ImportError due to
-# a missing module.
+from . import util
+
+# We don't add any of the Deep-Learning-framework-specific subpackages here
+# to keep their namespaces separate. This allows users to only install
+# selected frameworks and still be able to import the relevant subpackages
+# without getting ImportError due to a missing module.
