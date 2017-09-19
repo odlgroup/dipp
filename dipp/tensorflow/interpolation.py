@@ -19,14 +19,14 @@ def _pixel_value(img, x, y):
     ----------
     img: `tf.Tensor` of shape (B, H, W, C)
         The image to interpolate
-    x: `tf.Tensor` of shape (B*H*W, )
+    x: `tf.Tensor` of shape (B, H2, W2)
         x coordinate
-    y: `tf.Tensor`of shape (B*H*W, )
+    y: `tf.Tensor`of shape (B, H2, W2)
         y coordinate
 
     Returns
     -------
-    - output: `tf.Tensor` of shape (B, H, W, C)
+    - output: `tf.Tensor` of shape (B, H2, W2, C)
     """
     B = tf.shape(img)[0]
     H = tf.shape(x)[1]
