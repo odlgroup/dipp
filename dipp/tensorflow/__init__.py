@@ -10,5 +10,13 @@
 
 __all__ = ('interpolation',)
 
+try:
+    import tensorflow
+except ImportError:
+    raise ImportError('to use `dipp/tensorflow`, you need to install the '
+                      '`tensorflow` package either '
+                      'from conda: `conda install tensorflow`, '
+                      'or using pip: `pip install tensorflow`')
+
 from .interpolation import *
 __all__ += interpolation.__all__
