@@ -13,6 +13,14 @@ See http://pytorch.org/.
 
 __all__ = ('functions', 'modules')
 
+try:
+    import torch
+except ImportError:
+    raise ImportError('to use `dipp/pytorch`, you need to install the '
+                      '`pytorch` package either '
+                      'from conda: `conda install pytorch`, '
+                      'or from source, see http://pytorch.org/ for details')
+
 from .functions import *
 __all__ += functions.__all__
 
