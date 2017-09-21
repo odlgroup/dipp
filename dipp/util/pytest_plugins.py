@@ -21,6 +21,13 @@ except ImportError:
 else:
     PYTORCH_AVAILABLE = True
 
+try:
+    import tensorflow
+except ImportError:
+    TENSORFLOW_AVAILABLE = False
+else:
+    TENSORFLOW_AVAILABLE = True
+
 
 try:
     from pytest import fixture
@@ -40,6 +47,7 @@ except ImportError:
 def add_doctest_modules(doctest_namespace):
     """Make some modules available by default in doctests."""
     doctest_namespace['np'] = np
+
     if PYTORCH_AVAILABLE:
         from torch import autograd, nn
         doctest_namespace['pytorch'] = dipp.pytorch
@@ -47,14 +55,21 @@ def add_doctest_modules(doctest_namespace):
         doctest_namespace['autograd'] = autograd
         doctest_namespace['nn'] = nn
 
+    if TENSORFLOW_AVAILABLE:
+        doctest_namespace['tf'] = tensorflow
+
 
 # --- Ignored tests due to missing modules --- #
 
 this_dir = os.path.dirname(__file__)
 root = os.path.abspath(os.path.join(this_dir, os.pardir, os.pardir))
 collect_ignore = [os.path.join(root, 'setup.py')]
+
 if not PYTORCH_AVAILABLE:
     collect_ignore.append(os.path.join(root, 'dipp', 'pytorch'))
+
+if not TENSORFLOW_AVAILABLE:
+    collect_ignore.append(os.path.join(root, 'dipp', 'tensorflow'))
 
 
 # Add example directories to `collect_ignore`
