@@ -97,7 +97,6 @@ setup(
 
     package_data={'dipp': find_tests() + ['dipp/pytest.ini']},
     include_package_data=True,
-    entry_points={'pytest11': ['dipp_plugins = dipp.util.pytest_plugins']},
 
     install_requires=[],
     tests_require=['pytest', 'pytest-pep8'],

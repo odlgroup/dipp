@@ -64,7 +64,7 @@ def dipp_add_doctest_modules(doctest_namespace):
 # --- Ignored tests due to missing modules --- #
 
 this_dir = os.path.dirname(__file__)
-root = os.path.abspath(os.path.join(this_dir, os.pardir, os.pardir))
+root = os.path.abspath(os.path.join(this_dir, os.pardir))
 collect_ignore = [os.path.join(root, 'setup.py')]
 
 if not PYTORCH_AVAILABLE:
