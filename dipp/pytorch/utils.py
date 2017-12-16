@@ -8,6 +8,11 @@
 
 """Utilities for pyTorch."""
 
+__all__ = ('show_image_matrix',)
+
+
+from torch.autograd import Variable
+
 
 def show_image_matrix(image_batches, titles=None, indices=None, **kwargs):
     """Visualize a 2D set of images arranged in a grid.
@@ -41,6 +46,9 @@ def show_image_matrix(image_batches, titles=None, indices=None, **kwargs):
     else:
         displayed_batches = [batch[indices] for batch in image_batches]
 
+    displayed_batches = [batch.data if isinstance(batch, Variable) else batch
+                         for batch in displayed_batches]
+
     nrows = len(displayed_batches[0])
     ncols = len(displayed_batches)
 
@@ -64,3 +72,8 @@ def show_image_matrix(image_batches, titles=None, indices=None, **kwargs):
             ax.imshow(batch[i].squeeze(), **kwargs)
             ax.set_axis_off()
     plt.show()
+
+
+if __name__ == '__main__':
+    from dipp.util.testutils import run_doctests
+    run_doctests()

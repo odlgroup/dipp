@@ -44,8 +44,9 @@ except ImportError:
 
 
 @fixture(autouse=True)
-def add_doctest_modules(doctest_namespace):
+def dipp_add_doctest_modules(doctest_namespace):
     """Make some modules available by default in doctests."""
+    doctest_namespace['dipp'] = dipp
     doctest_namespace['np'] = np
 
     if PYTORCH_AVAILABLE:
