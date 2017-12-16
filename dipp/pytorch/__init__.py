@@ -26,3 +26,6 @@ __all__ += functions.__all__
 
 from .modules import *
 __all__ += modules.__all__
+
+from .utils import *
+__all__ += utils.__all__
