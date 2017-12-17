@@ -10,10 +10,8 @@
 
 from __future__ import print_function, division, absolute_import
 
-import numpy as np
 import os
 
-import dipp
 try:
     import torch
 except ImportError:
@@ -46,11 +44,14 @@ except ImportError:
 @fixture(autouse=True)
 def dipp_add_doctest_modules(doctest_namespace):
     """Make some modules available by default in doctests."""
+    import dipp
+    import numpy as np
     doctest_namespace['dipp'] = dipp
     doctest_namespace['np'] = np
 
     if PYTORCH_AVAILABLE:
         from torch import autograd, nn
+        import dipp.pytorch
         doctest_namespace['pytorch'] = dipp.pytorch
         doctest_namespace['torch'] = torch
         doctest_namespace['autograd'] = autograd
