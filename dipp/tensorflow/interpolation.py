@@ -1,4 +1,4 @@
-# Copyright 2014-2017 The DIPP contributors
+# Copyright 2017,2018 The DIPP contributors
 #
 # This file is part of DIPP.
 #

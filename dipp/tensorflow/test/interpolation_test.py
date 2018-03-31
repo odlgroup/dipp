@@ -1,4 +1,4 @@
-# Copyright 2014-2017 The DIPP contributors
+# Copyright 2017,2018 The DIPP contributors
 #
 # This file is part of DIPP.
 #
@@ -10,6 +10,7 @@ import numpy as np
 import tensorflow as tf
 from dipp.tensorflow import bilinear_interpolation
 import pytest
+
 
 def test_sample_single_point():
     with tf.Session():
@@ -47,7 +48,6 @@ def test_sample_interpolate():
         x, y = 0.75, 0.75
         result = bilinear_interpolation(img, [[[x]]], [[[y]]]).eval()
         assert pytest.approx(result.squeeze()) == 7.0
-
 
 
 def test_boundary_interpolate():
