@@ -42,7 +42,7 @@ except ImportError:
 
 
 @fixture(autouse=True)
-def dipp_add_doctest_modules(doctest_namespace):
+def _add_doctest_modules(doctest_namespace):
     """Make some modules available by default in doctests."""
     import dipp
     import numpy as np
@@ -94,3 +94,9 @@ collect_ignore = [os.path.normcase(ignored) for ignored in collect_ignore]
 def pytest_ignore_collect(path, config):
     normalized = os.path.normcase(str(path))
     return any(normalized.startswith(ignored) for ignored in collect_ignore)
+
+
+# --- Global fixtures --- #
+
+# NOTE: All global fixtures need to start with an underscore, so as to only
+# be available within ODL, not in other unrelated packages using pytest
