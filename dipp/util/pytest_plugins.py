@@ -42,7 +42,7 @@ except ImportError:
 
 
 @fixture(autouse=True)
-def _add_doctest_modules(doctest_namespace):
+def dipp_add_doctest_modules(doctest_namespace):
     """Make some modules available by default in doctests."""
     import dipp
     import numpy as np
@@ -50,12 +50,10 @@ def _add_doctest_modules(doctest_namespace):
     doctest_namespace['np'] = np
 
     if PYTORCH_AVAILABLE:
-        from torch import autograd, nn
         import dipp.pytorch
         doctest_namespace['pytorch'] = dipp.pytorch
         doctest_namespace['torch'] = torch
-        doctest_namespace['autograd'] = autograd
-        doctest_namespace['nn'] = nn
+        doctest_namespace['nn'] = torch.nn
 
     if TENSORFLOW_AVAILABLE:
         doctest_namespace['tf'] = tensorflow

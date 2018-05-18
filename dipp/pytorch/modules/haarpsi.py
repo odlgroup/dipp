@@ -10,7 +10,7 @@
 
 import numpy as np
 import torch
-from torch import nn, autograd
+from torch import nn
 from dipp.pytorch.modules.generic import InvSigmoid
 
 __all__ = ('HaarPSI',)
@@ -43,14 +43,10 @@ class HaarPSIScore(nn.Module):
         Initialize with fixed ``c``:
 
         >>> sim = HaarPSIScore(2)
-        >>> x = autograd.Variable(torch.Tensor([0, 1, 2]))
-        >>> y = autograd.Variable(torch.Tensor([0, 0, 0]))
+        >>> x = torch.Tensor([0, 1, 2])
+        >>> y = torch.Tensor([0, 0, 0])
         >>> sim(x, y)  # should be [1, 4/5, 1/2]
-        Variable containing:
-         1.0000
-         0.8000
-         0.5000
-        [torch.FloatTensor of size 3]
+        tensor([ 1.0000,  0.8000,  0.5000])
 
         Make ``c`` learnable:
 
@@ -60,8 +56,7 @@ class HaarPSIScore(nn.Module):
         1
         >>> params[0]
         Parameter containing:
-         2
-        [torch.FloatTensor of size 1]
+        tensor([ 2.])
         """
         super(HaarPSIScore, self).__init__()
         if c is None:
@@ -80,17 +75,17 @@ class HaarPSIScore(nn.Module):
 
 class HaarPSISimilarityMap(nn.Module):
 
-    """Pointwise similarity score for the HaarPSI FOM.
+    r"""Pointwise similarity score for the HaarPSI FOM.
 
     For input images :math:`f_1, f_2`, this module computes
 
     .. math::
         \mathrm{HS}_{f_1, f_2}^{(k)}(x) =
-        l_a \\left(
-        \\frac{1}{2} \sum_{j=1}^2
-        S\\left(\\left|g_j^{(k)} \\ast f_1 \\right|(x),
-        \\left|g_j^{(k)} \\ast f_2 \\right|(x), c\\right)
-        \\right),
+        l_a \left(
+        \frac{1}{2} \sum_{j=1}^2
+        S\left(\left|g_j^{(k)} \ast f_1 \right|(x),
+        \left|g_j^{(k)} \ast f_2 \right|(x), c\right)
+        \right),
 
     see `[Rei+2016] <https://arxiv.org/abs/1607.06140>`_ equation (10).
 
@@ -160,22 +155,18 @@ class HaarPSISimilarityMap(nn.Module):
         if self.axis == 0:
             # Horizontal high-pass
             f_l1_arr = np.multiply.outer(filt_hi_lvl1, filt_lo_lvl1)
-            f_l1 = autograd.Variable(
-                torch.from_numpy(f_l1_arr[None, None, ...]))
+            f_l1 = torch.from_numpy(f_l1_arr[None, None, ...])
 
             f_l2_arr = np.multiply.outer(filt_hi_lvl2, filt_lo_lvl2)
-            f_l2 = autograd.Variable(
-                torch.from_numpy(f_l2_arr[None, None, ...]))
+            f_l2 = torch.from_numpy(f_l2_arr[None, None, ...])
 
         else:
             # Vertical high-pass
             f_l1_arr = np.multiply.outer(filt_lo_lvl1, filt_hi_lvl1)
-            f_l1 = autograd.Variable(
-                torch.from_numpy(f_l1_arr[None, None, ...]))
+            f_l1 = torch.from_numpy(f_l1_arr[None, None, ...])
 
             f_l2_arr = np.multiply.outer(filt_lo_lvl2, filt_hi_lvl2)
-            f_l2 = autograd.Variable(
-                torch.from_numpy(f_l2_arr[None, None, ...]))
+            f_l2 = torch.from_numpy(f_l2_arr[None, None, ...])
 
         # Do the convolution. Padding must be `kernel_size - 1` to
         # compute the convolution using all input values. The padding
@@ -199,16 +190,16 @@ class HaarPSISimilarityMap(nn.Module):
 
 class HaarPSIWeightMap(nn.Module):
 
-    """Pointwise weight map for computation of the HaarPSI FOM.
+    r"""Pointwise weight map for computation of the HaarPSI FOM.
 
     For input images :math:`f_1, f_2`, this module computes
 
     .. math::
         \mathrm{W}_{f_1, f_2}^{(k)}(x) =
-        \max \\left\{
-        \\left|g_3^{(k)} \\ast f_1 \\right|(x),
-        \\left|g_3^{(k)} \\ast f_2 \\right|(x)
-        \\right\},
+        \max \left\{
+        \left|g_3^{(k)} \ast f_1 \right|(x),
+        \left|g_3^{(k)} \ast f_2 \right|(x)
+        \right\},
 
     see `[Rei+2016] <https://arxiv.org/abs/1607.06140>`_ equations (11)
     and (13).
@@ -253,14 +244,12 @@ class HaarPSIWeightMap(nn.Module):
         if self.axis == 0:
             # Horizontal high-pass
             f_l3_arr = np.multiply.outer(filt_hi_lvl3, filt_lo_lvl3)
-            f_l3 = autograd.Variable(
-                torch.from_numpy(f_l3_arr[None, None, ...]))
+            f_l3 = torch.from_numpy(f_l3_arr[None, None, ...])
 
         else:
             # Vertical high-pass
             f_l3_arr = np.multiply.outer(filt_lo_lvl3, filt_hi_lvl3)
-            f_l3 = autograd.Variable(
-                torch.from_numpy(f_l3_arr[None, None, ...]))
+            f_l3 = torch.from_numpy(f_l3_arr[None, None, ...])
 
         # Do the convolution. Padding must be `kernel_size - 1` to
         # compute the convolution using all input values. The padding
@@ -277,18 +266,18 @@ class HaarPSIWeightMap(nn.Module):
 
 class HaarPSI(nn.Module):
 
-    """The Haar Perceptual Similarity Index for image comparison.
+    r"""The Haar Perceptual Similarity Index for image comparison.
 
     For input images :math:`f_1, f_2`, this module computes the scalar
 
     .. math::
         \mathrm{HaarPSI}_{f_1, f_2} =
-        l_a^{-1} \\left(
-        \\frac{
+        l_a^{-1} \left(
+        \frac{
         \sum_x \sum_{k=1}^2 \mathrm{HS}_{f_1, f_2}^{(k)}(x) \cdot
         \mathrm{W}_{f_1, f_2}^{(k)}(x)}{
         \sum_x \sum_{k=1}^2 \mathrm{W}_{f_1, f_2}^{(k)}(x)}
-        \\right)^2
+        \right)^2
 
     see `[Rei+2016] <https://arxiv.org/abs/1607.06140>`_ equation (12).
     Here :math:`l_a^{-1}` is the inverse logistic function, and the
@@ -296,17 +285,17 @@ class HaarPSI(nn.Module):
 
     .. math::
         \mathrm{HS}_{f_1, f_2}^{(k)}(x) &=
-        l_a \\left(
-        \\frac{1}{2} \sum_{j=1}^2
-        S\\left(\\left|g_j^{(k)} \\ast f_1 \\right|(x),
-        \\left|g_j^{(k)} \\ast f_2 \\right|(x), c\\right)
-        \\right),
+        l_a \left(
+        \frac{1}{2} \sum_{j=1}^2
+        S\left(\left|g_j^{(k)} \ast f_1 \right|(x),
+        \left|g_j^{(k)} \ast f_2 \right|(x), c\right)
+        \right),
 
         \mathrm{W}_{f_1, f_2}^{(k)}(x) &=
-        \max \\left\{
-        \\left|g_3^{(k)} \\ast f_1 \\right|(x),
-        \\left|g_3^{(k)} \\ast f_2 \\right|(x)
-        \\right\}.
+        \max \left\{
+        \left|g_3^{(k)} \ast f_1 \right|(x),
+        \left|g_3^{(k)} \ast f_2 \right|(x)
+        \right\}.
 
     Here, :math:`l_a` is the logistic function,
     :math:`S(x, y, c) = (2xy + c) / (x^2+y^2 + c)` the pointwise similarity
