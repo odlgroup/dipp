@@ -5,7 +5,7 @@ pytest==3.2.2
 pytest-pep8==1.0.6
 
 # Deep Learning frameworks
-tensorflow==1.15.4
+tensorflow==2.5.0
 theano==0.9.0
 # Cannot add pytorch here since installation with pip fails
 
